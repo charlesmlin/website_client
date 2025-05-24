@@ -1,5 +1,5 @@
 node_modules
-build
+dist
 Dockerfile
 .dockerignore
 .github
@@ -7,5 +7,9 @@ Dockerfile
 .gitignore
 npm-debug.log
 .env
+.nyc_output
+coverage
+.coverage
+.vscode
 env.template
 README.md

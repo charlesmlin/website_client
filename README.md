@@ -1,3 +1,10 @@
+# Local run
+To run client locally, do:
+
+```
+npm run dev
+```
+
 # Build
 To build docker image, run:
 
@@ -25,3 +32,6 @@ aws ecr get-login-password | docker login --username AWS --password-stdin 048283
 docker tag website_client:latest 048283574717.dkr.ecr.eu-west-2.amazonaws.com/personal_website/client:latest
 docker push 048283574717.dkr.ecr.eu-west-2.amazonaws.com/personal_website/client:latest
 ```
+
+# Technical detail
+Icon Font: Kdam Thmor Pro (#FFA & #4285F4)
