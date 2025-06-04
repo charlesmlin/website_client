@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import ImageViewer from "./components/ImageViewer";
 import GoogleLoginButton from "./components/GoogleLoginButton";
+import QuizComponent from "./components/QuizComponent";
 
 function App({ apiUrl, googleClientId }) {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userIp, setUserIp] = useState(null);
 
   const fetchImageUrl = async () => {
     try {
@@ -41,16 +44,25 @@ function App({ apiUrl, googleClientId }) {
       return;
     }
     const userResponse = await response.json();
-    console.log("User response fetched: ", userResponse);
     if (!userResponse.success) {
       console.log(`Authentication failed: ${userResponse.message}`);
       return;
     }
+    setUserEmail(userResponse.email)
     setUsername(userResponse.name.split(" ")[0]);
+  };
+
+  const fetchUserIp = async () => {
+    try {
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      setUserIp(data.ip);
+    } catch (err) {}
   };
 
   useEffect(() => {
     fetchImageUrl();
+    fetchUserIp();
   }, [apiUrl]);
 
   return (
@@ -68,8 +80,10 @@ function App({ apiUrl, googleClientId }) {
             </>
           )}
         </header>
-        <main className="flex flex-col justify-center text-4xl md:text-6xl font-bold text-center gap-4">
-          <h1>AWS S3 Image Viewer</h1>
+        <main className="flex flex-col justify-center gap-4">
+          <div className="text-4xl md:text-6xl font-bold text-center">
+            <h1>AWS S3 Image Viewer</h1>
+          </div>
           {loading && (
             <div className="flex flex-col items-center space-y-4">
               <div className="loading-spinner">
@@ -83,6 +97,13 @@ function App({ apiUrl, googleClientId }) {
             </div>
           )}
           {imageUrl && !loading && <ImageViewer url={imageUrl} />}
+          {(userEmail || userIp) && (
+            <QuizComponent
+              apiUrl={apiUrl}
+              userId={userEmail || userIp}
+              certification="cloud-practitioner"
+            />
+          )}
         </main>
       </div>
     </div>
