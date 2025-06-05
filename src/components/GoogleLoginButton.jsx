@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import scriptLoader from '../utils/ScriptLoader';
 
 // GIS is used here for Google Authentication as only user identity is needed, and not needing to call Google API on behalf of user

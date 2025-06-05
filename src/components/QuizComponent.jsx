@@ -210,7 +210,7 @@ const QuizComponent = ({ apiUrl, userId, certification }) => {
       <div className="space-y-3 mb-6">
         {Object.entries(currentQuestion.options).map(([key, value]) => (
           <label
-            key={key}
+            key={`Option${key}`}
             className={`flex items-start p-4 border rounded-lg cursor-pointer transition-colors ${getOptionClassName(
               key
             )} ${submitted ? "cursor-default" : "cursor-pointer"}`}
@@ -282,7 +282,7 @@ const QuizComponent = ({ apiUrl, userId, certification }) => {
                 <ul className="list-disc list-inside">
                   {currentQuestion.explanation.keyPointToTest.map(
                     (point, idx) => (
-                      <li key={idx}>{point}</li>
+                      <li key={`KeyPoint${idx}`}>{point}</li>
                     )
                   )}
                 </ul>
@@ -312,7 +312,7 @@ const QuizComponent = ({ apiUrl, userId, certification }) => {
                         const concept = Object.keys(item)[0];
                         const explanation = item[concept];
                         return (
-                          <tr key={idx}>
+                          <tr key={`TerminologyRow${idx}`}>
                             <td className="border border-gray-300 px-3 py-2">
                               {concept}
                             </td>
@@ -352,7 +352,7 @@ const QuizComponent = ({ apiUrl, userId, certification }) => {
                     {Object.entries(currentQuestion.explanation.options).map(
                       ([letter, detail]) => {
                         return (
-                          <tr>
+                          <tr key={`AnswerOption${letter}`}>
                             <td className="border border-gray-300 px-3 py-2">
                               {letter}
                             </td>

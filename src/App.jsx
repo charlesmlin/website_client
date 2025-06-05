@@ -2,33 +2,16 @@ import { useState, useEffect } from "react";
 import ImageViewer from "./components/ImageViewer";
 import GoogleLoginButton from "./components/GoogleLoginButton";
 import QuizComponent from "./components/QuizComponent";
+import DraggableComponent from "./wrapper/DraggableWrapper";
+import LayoutEditButton from "./components/LayoutEditButton";
 
 function App({ apiUrl, googleClientId }) {
-  const [imageUrl, setImageUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [username, setUsername] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userIp, setUserIp] = useState(null);
-
-  const fetchImageUrl = async () => {
-    try {
-      const response = await fetch(
-        `${apiUrl}/imageurl/Charles_Profile_Pic.jpeg`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch image URL");
-      }
-
-      const imageUrl = await response.text();
-      setImageUrl(imageUrl);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [viewerPosition, setViewerPosition] = useState({ x: 0, y: 100 });
+  const [quizPosition, setQuizPosition] = useState({ x: 500, y: 100 });
 
   const authenticateUser = async (token) => {
     // Send the token directly to server for authentication
@@ -48,7 +31,7 @@ function App({ apiUrl, googleClientId }) {
       console.log(`Authentication failed: ${userResponse.message}`);
       return;
     }
-    setUserEmail(userResponse.email)
+    setUserEmail(userResponse.email);
     setUsername(userResponse.name.split(" ")[0]);
   };
 
@@ -60,8 +43,20 @@ function App({ apiUrl, googleClientId }) {
     } catch (err) {}
   };
 
+  const handlePositionChange = (id, newPosition) => {
+    if (id === "imageViewer") {
+      setViewerPosition(newPosition);
+    } else if (id === "awsQuiz") {
+      setQuizPosition(newPosition);
+    }
+  };
+
+  const toggleDragMode = () => {
+    console.log("Toggled");
+    setIsDragMode(!isDragMode);
+  };
+
   useEffect(() => {
-    fetchImageUrl();
     fetchUserIp();
   }, [apiUrl]);
 
@@ -69,42 +64,52 @@ function App({ apiUrl, googleClientId }) {
     <div className="min-h-screen bg-react-dark text-white">
       <div className="flex flex-col min-h-screen p-4 mb-8">
         <header className="flex flex-row justify-end items-center gap-4 min-h-[40px]">
-          {username && <p>Welcome back, {username}</p>}
-          {!username && (
-            <>
-              <p>Sign in as Admin:</p>
-              <GoogleLoginButton
-                clientId={googleClientId}
-                onSuccess={authenticateUser}
-              />
-            </>
-          )}
-        </header>
-        <main className="flex flex-col justify-center gap-4">
-          <div className="text-4xl md:text-6xl font-bold text-center">
-            <h1>AWS S3 Image Viewer</h1>
+          <div className="flex flex-row items-center gap-4">
+            {username && <p>Welcome back, {username}</p>}
+            {!username && (
+              <>
+                <p>Sign in as Admin:</p>
+                <GoogleLoginButton
+                  clientId={googleClientId}
+                  onSuccess={authenticateUser}
+                />
+              </>
+            )}
           </div>
-          {loading && (
-            <div className="flex flex-col items-center space-y-4">
-              <div className="loading-spinner">
-                <p className="text-lg">Loading image...</p>
-              </div>
-            </div>
-          )}
-          {error && (
-            <div className="text-center">
-              <p className="error-message">Error: {error}</p>
-            </div>
-          )}
-          {imageUrl && !loading && <ImageViewer url={imageUrl} />}
-          {(userEmail || userIp) && (
-            <QuizComponent
+        </header>
+        <main className="flex-grow flex flex-col justify-center gap-4">
+          <DraggableComponent
+            key="imageViewer"
+            id="imageViewer"
+            position={viewerPosition}
+            onPositionChange={handlePositionChange}
+            isDragMode={isDragMode}
+          >
+            <ImageViewer
               apiUrl={apiUrl}
-              userId={userEmail || userIp}
-              certification="cloud-practitioner"
+              imageName="Charles_Profile_Pic.jpeg"
+              headerText={null}
             />
+          </DraggableComponent>
+          {(userEmail || userIp) && (
+            <DraggableComponent
+              key="awsQuiz"
+              id="awsQuiz"
+              position={quizPosition}
+              onPositionChange={handlePositionChange}
+              isDragMode={isDragMode}
+            >
+              <QuizComponent
+                apiUrl={apiUrl}
+                userId={userEmail || userIp}
+                certification="cloud-practitioner"
+              />
+            </DraggableComponent>
           )}
         </main>
+        <footer className="flex flex-row justify-end items-center">
+          <LayoutEditButton isDragMode={isDragMode} onToggle={toggleDragMode} />
+        </footer>
       </div>
     </div>
   );
