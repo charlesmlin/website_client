@@ -125,7 +125,7 @@ const DraggableComponent = ({
   return (
     <div
       ref={componentRef}
-      className={`absolute bg-white border-2 rounded-lg shadow-lg ${
+      className={`absolute pb-1 max-h-full overflow-y-auto bg-white border-2 rounded-lg shadow-lg ${
         isDragMode
           ? "border-blue-400 cursor-move hover:shadow-xl touch-none"
           : "border-gray-200 cursor-default"

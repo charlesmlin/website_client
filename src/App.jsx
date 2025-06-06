@@ -10,8 +10,8 @@ function App({ apiUrl, googleClientId }) {
   const [userEmail, setUserEmail] = useState(null);
   const [userIp, setUserIp] = useState(null);
   const [isDragMode, setIsDragMode] = useState(false);
-  const [viewerPosition, setViewerPosition] = useState({ x: 0, y: 100 });
-  const [quizPosition, setQuizPosition] = useState({ x: 500, y: 100 });
+  const [viewerPosition, setViewerPosition] = useState({ x: 0, y: 0 });
+  const [quizPosition, setQuizPosition] = useState({ x: 500, y: 0 });
 
   const authenticateUser = async (token) => {
     // Send the token directly to server for authentication
@@ -62,7 +62,7 @@ function App({ apiUrl, googleClientId }) {
 
   return (
     <div className="min-h-screen bg-react-dark text-white">
-      <div className="flex flex-col min-h-screen p-4 mb-8">
+      <div className="flex flex-col min-h-screen p-4">
         <header className="flex flex-row justify-end items-center gap-4 min-h-[40px]">
           <div className="flex flex-row items-center gap-4">
             {username && <p>Welcome back, {username}</p>}
@@ -77,7 +77,7 @@ function App({ apiUrl, googleClientId }) {
             )}
           </div>
         </header>
-        <main className="flex-grow flex flex-col justify-center gap-4">
+        <main className="relative flex-grow flex flex-col justify-center gap-4 overflow-hidden">
           <DraggableComponent
             key="imageViewer"
             id="imageViewer"
